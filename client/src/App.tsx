@@ -9,7 +9,7 @@ import Community from './pages/Community'
 import View from './pages/View'
 import Home from './pages/Home'
 import Navbar from './components/Navbar'
-import {Toaster, toast} from 'sonner';
+import {Toaster} from 'sonner';
 import AuthPage from './pages/auth/AuthPage'
 import Settings from './pages/Settings'
 import Loading from './pages/Loading'

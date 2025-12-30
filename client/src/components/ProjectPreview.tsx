@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import  { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import type { Project } from '../types'
 import { iframeScript } from '../assets/assets';
 import EditorPanel from '../components/EditorPanel'
@@ -7,7 +7,7 @@ import LoaderSteps from './LoaderSteps';
 interface ProjectPreviewProps {
     project: Project;
     isGenerating: boolean; 
-    device?: 'desktop' | 'phone' | 'mobile';
+    device?: 'desktop' | 'phone' | 'tablet';
     showEditorPanel?: boolean;
 }
 

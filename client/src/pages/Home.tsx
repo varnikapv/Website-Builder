@@ -2,7 +2,6 @@ import api from '@/configs/axios';
 import { authClient } from '@/lib/auth-client';
 import { Loader2Icon } from 'lucide-react';
 import React from 'react'
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -23,7 +22,7 @@ const Home = () => {
       const {data} = await api.post('/api/user/project', {initial_prompt: input});
       setLoading(false);
       navigate(`/projects/${data.projectId}`);
-    }catch(error){
+    }catch(error: any){
       setLoading(false);
       toast.error(error?.response?.data?.message || error.message);
       console.log(error);

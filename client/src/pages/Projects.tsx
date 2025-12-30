@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import  { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import type { Project } from '../types'
 import { ArrowBigDownDashIcon, EyeIcon, EyeOffIcon, FullscreenIcon, LaptopIcon, Loader2Icon, MessageSquareIcon, SaveIcon, SmartphoneIcon, TabletIcon, XIcon } from 'lucide-react'
@@ -17,7 +17,7 @@ const Projects = () => {
   const [loading, setLoading] = useState(true);
 
   const [isGenerating, setIsGenerating] = useState(true);
-  const [device, setDevice] = useState<'desktop' |'phone'| 'mobile'>('desktop');
+  const [device, setDevice] = useState<'desktop' |'phone'| 'tablet'>('desktop');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
