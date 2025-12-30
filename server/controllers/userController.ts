@@ -1,6 +1,7 @@
 import {Request, Response}  from 'express'
 import prisma from '../lib/prisma';
 import openai from '../configs/openai';
+import Stripe from 'stripe';
 
 // Get User Credits
 export const getUserCredits = async (req: Request, res: Response)=> {
@@ -289,8 +290,142 @@ try{
 }
 
 //controller fn to purchase credits
-export const purchaseCredits = async (req: Request, res: Response)=> {
+// export const purchaseCredits = async (req: Request, res: Response)=> {
+// try{
+// interface Plan{
+//     credits: number;
+//     amount: number;
 
+// }
+// const plans = {
+//     basics: {credits: 100, amount: 5},
+//     pro: {credits: 400, amount: 19},
+//     enterprise: {credits: 1000, amount: 49},
+// }
+// const userId = req.userId;
+// const {planId} = req.body as {planId: keyof typeof plans};
+// const origin = req.headers.origin as string;
 
-}
+// const plan: Plan = plans[planId];
+// if(!plan){
+//     return res.status(404).json({message: 'Invalid plan selected'});
+// }
+// const transaction = await prisma.transaction.create({
+//     data:{
+//         userId: userId!,
+//         planId: req.body.planId,
+//         amount: plan.amount,
+//         credits: plan.credits
+//     }
+// })
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+// const session = await stripe.checkout.sessions.create({
+//   success_url: `${origin}/loading`,
+//     cancel_url: `${origin}`,
+//   line_items: [
+//     {
+//       price_data: {
+//         currency: 'usd',
+//         product_data: {
+//           name: `AiWebsiteBuilder - ${plan.credits} Credits`,
+//         },
+//         unit_amount: Math.floor(transaction.amount) * 100
+//       },
+//       quantity: 1,
+     
+//     },
+//   ],
+//   mode: 'payment',
+//   metadata:{
+//     transactionId: transaction.id,
+//     appId: 'Ai-Website-Builder'
+//   },
+//   expires_at: Math.floor(Date.now() / 1000) + 30 * 60, //30 minutes
+// });
+// res.json({payment_link: session.url})
+
+// }catch(error: any){
+//     console.log(error.code || error.message); 
+//     res.status(500).json({message: error.message});
+// }
+// }
+
+export const purchaseCredits = async (req: Request, res: Response) => {
+  try {
+    console.log('🔍 purchaseCredits called'); // Add this
+    console.log('🔍 Request body:', req.body); // Add this
+    console.log('🔍 User ID:', req.userId); // Add this
+    
+    interface Plan {
+      credits: number;
+      amount: number;
+    }
+    
+    const plans = {
+      basics: { credits: 100, amount: 5 },
+      pro: { credits: 400, amount: 19 },
+      enterprise: { credits: 1000, amount: 49 },
+    };
+    
+    const userId = req.userId;
+    const { planId } = req.body as { planId: keyof typeof plans };
+    const origin = req.headers.origin as string;
+    
+    console.log('🔍 Plan ID:', planId); // Add this
+    
+    const plan: Plan = plans[planId];
+    if (!plan) {
+      console.log('❌ Plan not found'); // Add this
+      return res.status(404).json({ message: 'Invalid plan selected' });
+    }
+    
+    console.log('✅ Plan found:', plan); // Add this
+    console.log('✅ Creating transaction...'); // Add this
+    
+    const transaction = await prisma.transaction.create({
+      data: {
+        userId: userId!,
+        planId: planId,
+        amount: plan.amount,
+        credits: plan.credits
+      }
+    });
+    
+    
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+
+    
+    const session = await stripe.checkout.sessions.create({
+      success_url: `${origin}/loading`,
+      cancel_url: `${origin}`,
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `AiWebsiteBuilder - ${plan.credits} Credits`,
+            },
+            unit_amount: plan.amount * 100
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      metadata: {
+        transactionId: transaction.id,
+        appId: 'Ai-Website-Builder'
+      },
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+    });
+    
+    
+    
+    return res.json({ payment_link: session.url }); 
+
+  } catch (error: any) {
+   
+    console.log(error.code || error.message);
+    return res.status(500).json({ message: error.message }); 
+  }
+};
 

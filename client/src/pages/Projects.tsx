@@ -8,6 +8,7 @@ import api from '@/configs/axios'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth-client'
 
+
 const Projects = () => {
   const {projectId} = useParams()
   const navigate = useNavigate()
@@ -35,9 +36,27 @@ const Projects = () => {
     console.log(error);
    }
   }
-const saveProject = async () =>{
+const saveProject = async () => {
+  if (!previewRef.current) return;
 
-}
+  const code = previewRef.current.getCode();
+  if (!code) {
+    toast.error("No code to save");
+    return;
+  }
+
+  setIsSaving(true);
+  try {
+    const { data } = await api.put(`/api/project/save/${projectId}`, { code });
+    toast.success(data.message);
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || error.message);
+    console.log(error);
+  } finally {
+    setIsSaving(false);
+  }
+};
+
 //download code ( index.html)
 const downloadCode = ()=>{
     const code = previewRef.current?.getCode() || project?.current_code
@@ -58,7 +77,14 @@ const downloadCode = ()=>{
 
 
 const togglePublish = async () =>{
-
+  try{
+    const {data} = await api.put(`/api/user/publish-toggle/${projectId}`)
+    toast.success(data.message);
+    setProject((prev)=> prev ? ({...prev, isPublished: !prev.isPublished}) : null);
+  }catch(error: any){
+    toast.error(error?.response?.data?.message || error.message);
+    console.log(error);
+  }
 }
 useEffect(()=>{
   if(session?.user){
@@ -154,5 +180,7 @@ useEffect(()=>{
     </div>
   )
 }
+
+
 
 export default Projects

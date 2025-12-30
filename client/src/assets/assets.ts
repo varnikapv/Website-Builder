@@ -6,7 +6,7 @@ export const assets = {
 
 export const appPlans = [
         {
-            id: 'basic',
+            id: 'basics',
             name: 'Basic',
             price: '$5',
             credits: 100,

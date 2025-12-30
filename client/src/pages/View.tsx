@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { dummyProjects } from "../assets/assets";
 import { Loader2Icon } from "lucide-react";
 import ProjectPreview from "../components/ProjectPreview";
 import type { Project } from "../types";
+import api from "@/configs/axios";
+import { toast } from "sonner";
 
 
 const View = () => {
@@ -12,22 +13,21 @@ const View = () => {
   const [loading, setLoading] = useState(true);
 
 const fetchCode = async () =>{
-  const code = dummyProjects.find(project=> project.id === projectId)?.current_code;
-  setTimeout(()=>{
-    if(code){
-      setCode(code);
-      setLoading(false);
-    }
-  }, 2000);
+  try{
+    const {data} = await api.get(`/api/project/published/${projectId}`);
+    setCode(data.code)
+    setLoading(false);
+  }catch(error: any){
+    toast.error(error?.response?.data?.message || error.message);
+    console.log(error);
 }
-
+}
   useEffect(()=>{
     fetchCode()
-  },[])
+  },[projectId])
 
   if(loading){
-    return 
-    (
+    return (
       <div className="flex items-center justify-center h-screen">
         <Loader2Icon className=" size-7 text-indigo-200 animate-spin"/>
       </div>

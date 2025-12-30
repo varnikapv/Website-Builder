@@ -9,7 +9,8 @@ userRouter.get('/credits', protect, getUserCredits);
 userRouter.post('/project', protect, createUserProject);
 userRouter.get('/project/:projectId', protect, getUserProject);
 userRouter.get('/projects', protect, getUserProjects);
-userRouter.get('/publish-toggle/:projectId', protect, togglePublish);
+userRouter.put('/publish-toggle/:projectId', protect, togglePublish);
 userRouter.post('/purchase-credits', protect, purchaseCredits);
+
 
 export default userRouter;
